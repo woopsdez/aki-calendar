@@ -1,6 +1,7 @@
 import { initializeApp } from "firebase/app";
 import { getFirestore } from "firebase/firestore";
 import { getAuth, signInAnonymously, onAuthStateChanged } from "firebase/auth";
+import { initializeAppCheck, ReCaptchaV3Provider } from "firebase/app-check";
 
 // 設定は .env から読む（VITE_ プレフィックスが必須）。値は公開前提のクライアントキー。
 const firebaseConfig = {
@@ -13,6 +14,12 @@ const firebaseConfig = {
 };
 
 const app = initializeApp(firebaseConfig);
+
+initializeAppCheck(app, {
+  provider: new ReCaptchaV3Provider(import.meta.env.VITE_RECAPTCHA_SITE_KEY),
+  isTokenAutoRefreshEnabled: true,
+});
+
 export const db = getFirestore(app);
 export const auth = getAuth(app);
 
