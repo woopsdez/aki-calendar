@@ -1,0 +1,31 @@
+rules_version = '2';
+
+// 設計の肝：
+//  - イベントは誰でも読める（リンクを知っていれば見られる ＝ 調整さんと同じ公開モデル）
+//  - 回答は「自分の uid の行」だけ作成・更新・削除できる → 他人の行は壊せない
+//  - イベント本体（タイトル・時間帯）の変更はオーナーのみ
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    match /events/{eventId} {
+      allow read: if true;
+
+      // 作成は認証済み（匿名でOK）で、ownerUid が本人であること
+      allow create: if request.auth != null
+                    && request.resource.data.ownerUid == request.auth.uid;
+
+      // 設定変更はオーナーのみ
+      allow update: if request.auth != null
+                    && resource.data.ownerUid == request.auth.uid;
+
+      allow delete: if false;
+
+      // 回答：docId が uid。自分の行だけ書ける。
+      match /responses/{uid} {
+        allow read: if true;
+        allow create, update, delete: if request.auth != null
+                                      && request.auth.uid == uid;
+      }
+    }
+  }
+}
