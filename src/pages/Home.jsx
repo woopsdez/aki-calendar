@@ -53,6 +53,7 @@ export default function Home() {
             onChange={(e) => setTitle(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && create()}
             placeholder="イベント名（例：忘年会、紹介MTG）"
+            maxLength={200}
             style={S.input}
           />
           <button style={S.createBtn} onClick={create} disabled={busy}>

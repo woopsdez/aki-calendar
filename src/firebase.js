@@ -30,6 +30,7 @@ export function ensureAuth() {
     });
     signInAnonymously(auth).catch((e) => {
       off();
+      authPromise = null; // 失敗時はリセットして次回リトライ可能にする
       reject(e);
     });
   });
